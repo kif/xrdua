@@ -1,0 +1,252 @@
+Instructions for users:
+-----------------------
+	
+   1. Install IDL 8.0 or higher (no license required).
+
+   2. Download XRDUA from xrdua.ua.ac.be
+
+   3. Unzip the xrdua_vx-x-x-x.zip package.
+
+   4. Double-click "xrdua.sav" (Windows) or
+      type "idl -vm=xrdua.sav" in a shell (Linux/MAC).
+
+
+Comments:
+
+   If you want the program setting file (xrdua.ini) to be saved in another
+   directory than the IDL application user directory, add the variable
+   "xrduadir" to the environment: 
+
+   Windows: Control Panel > System > Advanced > 
+                                         Environment Variables > User variables 
+
+   Linux: add "setenv xrduadir ..." or "export xrduadir=..." to a shell startup
+          or login script.
+
+   On Linux it might also be handy to run INSTALL (as root) to avoid having to
+   type "idl -vm=xrdua.sav" every time you want to run it. Typing "xrdua" on
+   the command line will start XRDUA.
+
+
+
+Instructions for developers:
+----------------------------
+
+   You will need:
+   
+    1. IDL 8.0 or higher
+
+    2. BaZaar (version control system)
+    
+    3. Subscription to the XRDUA SourceForge project: register 
+        at Sourceforge and mail the XRDUA project administrator to add you
+        to the XRDUA project (woutdenolf@users.sf.net).
+
+
+
+A. Getting started:
+-------------------
+
+   1. Install IDL 8.0 or higher
+
+   2. Start IDL: it asks for a workspace directory. Choose a new directory,
+      for example "c:/xrduaworkspace".
+    
+   3. Install BaZaar
+
+   4. Copy the XRDUA project from sourceforge to the workspace directory
+      by typing this on the DOS prompt:
+
+       bzr branch bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua c:/xrduaworkspace/xrdua
+    
+      where "USERNAME" is your sourceforge username. We will refer to 
+      "c:/xrduaworkspace" as the workspace directory
+      and to "c:/xrduaworkspace/xrdua" as the project directory.
+
+   5. Add the project to the workspace in IDL. From the IDL menu bar
+      select "File > New project...". Use the "Create the new project in the
+      workspace" option and give it the name "xrdua".
+
+   6. Change some project settings. From the IDL menu bar
+      select "Project > Properties" and apply these changes:
+   
+       a. uncheck all boxes under "IDL Build Properties"
+   
+       b. set "IDL Build Properties > IDL pre-process command" = @compile
+
+   7. Compile the project. From the IDL menu bar
+      select "Project > Build Project" or type "@compile" on the command line.
+
+   8. Run the project. From the IDL menu bar select "Run > Run project" or type
+      "xrdua" on the command line.
+   
+   
+Comments:
+
+   Source files can also be downloaded manually of course (i.e. without
+   making use of BaZaar and subscription to SourceForge) although it will
+   be appriciated if you do. Setting up IDL is very similar, unpacking
+   xrdua_src_vx-x-x-x.zip instead of branching with BaZaar. This is the
+   latest "release" and might not contain some of the last revisions
+   made by other developers.
+   
+   When you don't use the IDL workbench, make sure you have the XRDUA
+   project directory and its subdirectories in the IDL "!path" list (e.g.
+   !path+=';+c:/xrduaworkspace/xrdua').
+   Use the command line versions for compiling (@compile), running (xrdua)
+   and building (@build).
+   
+   
+   
+B. Make a runtime version of XRDUA:
+-----------------------------------
+
+   Make a runtime version (i.e. a SAVE file) that will run under IDL's virtual
+   machine on any IDL supported OS, by typing "@build" on the command line.
+
+
+
+C. Adding functionality to XRDUA:
+---------------------------------
+
+The usual workflow is:
+
+    1. Change the XRDUA source code
+    
+    2. Add header "./FILEHEADER" to new files
+    
+    3. Add new file names to "./build/compilecore.pro"
+    
+    4. Add new function descriptions to "./dev.pro"
+    
+    5. Finish your changes by typing on the IDL command line:
+    
+          @xvrevision
+          
+       You will also need to type a description of the changes you made.
+    
+    6. Upload your changes to sourceforge by typing on the IDL command line:
+    
+          sourceforge,'USERNAME',/push
+       
+       You will need to give your sourceforge password when asked.
+       
+
+More detailed decription:
+
+   1. All new source files should be added to the "./core" directory.
+
+   2. Make sure that each file starts with a copy of what's in "./FILEHEADER"
+
+   3. The name of a new source file should be added to
+      "./build/compilecore.pro" which determines which files should be
+      compiled and in which order.
+   
+   4. A short description of the new functions and procedures should be
+      added to "./dev.pro"
+   
+   5. The XRDUA version number should be increased typing "@xvmajor",
+      "@xvminor", "@xvrevision" or "@xvbuild" on the IDL command line.
+      It will ask for a description of your changes. You need BaZaar to
+      make it work.
+   
+      In principle, in subsequent releases, the major number is increased
+      when there are significant jumps in functionality, the minor number
+      is incremented when only minor features or significant fixes have
+      been added, and the revision number is incremented when minor bugs
+      are fixed.
+      The @xv... batch files perform the following:
+      - change version number in Platform.pro
+      - add a description to the history file (for which you will be
+        prompted at the IDL prompt)
+      - adds new files and commits the changes with BaZaar
+   
+   6. Upload your changes to sourceforge by typing this at the IDL command line
+   
+      sourceforge,'USERNAME',/push
+
+      This might fail when the sourceforge branch has been changed by some else.
+      Check the section on BaZaar below on how to merge the two branches. In
+      principle you can do this
+   
+      sourceforge,'USERNAME',/merge
+      sourceforge,'USERNAME',/commit
+      sourceforge,'USERNAME',/push
+   
+      After merging and before commiting, you might have to resolve conflicts 
+      between your changes and the sourceforge branch.
+   
+
+Comments:
+   
+   Running the "sourceforge" commands will prompt you to type in your
+   sourceforge password. To avoid having to do this, copy your public SSH key to
+   sourceforge. Have a look in your account settings under "Services".
+
+
+
+D. Release a new version of XRDUA:
+----------------------------------
+
+   As for now, releases will be made by the project administrator. This involves
+   adding a release to the XRDUA homepage database and
+   building/packing/uploading an XRDUA runtime version and code bundle to
+   SourceForge and the XRDUA homepage.
+
+
+
+E. BaZaar basics:
+-----------------
+
+   Make local branch from SourceForge:
+   -----------------------------------
+     bzr branch bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua c:/xrduaworkspace/xrdua
+   
+   
+   Push and pull new revisions to and from SourceForge:
+   ----------------------------------------------------
+     cd c:/xrduaworkspace/xrdua
+     bzr push bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua
+     bzr pull bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua
+      
+      remote: A --> B --> C --> D  (3 revisions were commited)
+               \                 \
+             (branch)           (pull)
+                 \                  \
+      local:      \--> A (no change) \--> D  (no revisions were commited)
+      
+      
+      remote: A      (no change)       --> C   (no revisions were commited)
+               \                      /
+             (branch)             (push)
+                 \                  /
+      local:      \--> A --> B --> C   (2 revisions were commited)
+   
+   
+   Merge diverged branches:
+   ------------------------
+     cd c:/xrduaworkspace/xrdua
+     bzr merge bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua
+     (new revision created)
+     (resolve conflicts)
+     bzr resolve
+     bzr commit
+     bzr push bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua
+      
+      remote: A --> B --> C --> D   (3 revisions were commited)
+               \                 \  
+             (branch)           (merge) 
+                 \                  \ 
+      local:      \--> A --> X --> Y --> Z   (2 revisions were commited)
+   
+   
+   Checkout (instead of branch):
+   -----------------------------
+     cd c:/xrduaworkspace/xrdua
+     bzr checkout bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua
+      
+      => You don't have to explicitly push because "bzr commit" will do that\
+         automatically for a checkout.
+      => Merge divergence is done by "update":
+
+     bzr update bzr+ssh://USERNAME@xrdua.bzr.sourceforge.net/bzrroot/xrdua/xrdua

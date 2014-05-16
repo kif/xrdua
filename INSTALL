@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# Run this script to allow all users to start XRDUA by just typing 'xrdua' in a shell.
+#
+# Usage: . INSTALL
+
+INSTALLDIR=/usr/local/xrdua
+XRDUASTARTSCRIPT=/usr/local/bin/xrdua
+
+# Check for root
+if [ `id -u` != 0 ]; then
+    echo ""
+    echo "Must be logged in as root to run this script."
+    echo ""
+else
+	# Check files
+	if [ ! -f ./xrdua.sav ] ; then
+	    echo ""
+	    echo "Binary files not found."
+	    echo ""
+	else
+		# Copy
+		if [ ! -d "$INSTALLDIR" ]; then
+		   rm $INSTALLDIR -rf
+		   mkdir $INSTALLDIR
+		fi
+		cp * $INSTALLDIR -fR
+		chmod 755 $INSTALLDIR -R
+		rm "$INSTALLDIR/INSTALL" -f
+		
+		# Make start script
+		echo '#!/bin/bash' > $XRDUASTARTSCRIPT
+		echo 'if [ ! -d "$HOME/xrdua" ]; then' >> $XRDUASTARTSCRIPT
+		echo '   mkdir $HOME/xrdua' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo '' >> $XRDUASTARTSCRIPT
+		echo "XRDUAINSTALLDIR=$INSTALLDIR" >> $XRDUASTARTSCRIPT
+		echo 'XRDUADIR=$HOME/xrdua' >> $XRDUASTARTSCRIPT
+		echo 'export XRDUADIR' >> $XRDUASTARTSCRIPT
+		echo '' >> $XRDUASTARTSCRIPT
+		echo 'if [ ! -f $HOME/xrdua/xrdua.sav ] && [ ! -L $HOME/xrdua/xrdua.sav ]; then' >> $XRDUASTARTSCRIPT
+		echo '   ln -s $XRDUAINSTALLDIR/xrdua.sav $HOME/xrdua/xrdua.sav' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo 'if [ ! -f $HOME/xrdua/history ] && [ ! -L $HOME/xrdua/history ]; then' >> $XRDUASTARTSCRIPT
+		echo '   ln -s $XRDUAINSTALLDIR/history $HOME/xrdua/history' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo 'if [ ! -f $HOME/xrdua/COPYING ] && [ ! -L $HOME/xrdua/COPYING ]; then' >> $XRDUASTARTSCRIPT
+		echo '   ln -s $XRDUAINSTALLDIR/COPYING $HOME/xrdua/COPYING' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo 'if [ ! -f $HOME/xrdua/ua.bmp ] && [ ! -L $HOME/xrdua/ua.bmp ]; then' >> $XRDUASTARTSCRIPT
+		echo '   ln -s $XRDUAINSTALLDIR/ua.bmp $HOME/xrdua/ua.bmp' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo 'if [ ! -f $HOME/xrdua/XRDUAManual.pdf ] && [ ! -L $HOME/xrdua/XRDUAManual.pdf ]; then' >> $XRDUASTARTSCRIPT
+		echo '   ln -s $XRDUAINSTALLDIR/XRDUAManual.pdf $HOME/xrdua/XRDUAManual.pdf' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo '' >> $XRDUASTARTSCRIPT
+		echo 'if [ -f $HOME/xrdua/xrdua.sav ] || [ -L $HOME/xrdua/xrdua.sav ]; then' >> $XRDUASTARTSCRIPT
+		echo '   logger -p auth.notice -t xrdua `/usr/bin/whoami`' >> $XRDUASTARTSCRIPT
+		echo '   idl -vm=$HOME/xrdua/xrdua.sav ${1:+"$@"}' >> $XRDUASTARTSCRIPT
+		echo 'else' >> $XRDUASTARTSCRIPT
+		echo '   echo ""' >> $XRDUASTARTSCRIPT
+		echo '   echo "Can not find $HOME/xrdua/xrdua.sav"' >> $XRDUASTARTSCRIPT
+		echo '   echo ""' >> $XRDUASTARTSCRIPT
+		echo 'fi' >> $XRDUASTARTSCRIPT
+		echo '' >> $XRDUASTARTSCRIPT
+		
+		chmod 755 $XRDUASTARTSCRIPT
+
+		echo ""
+		echo "XRDUA is installed succesfully. Type 'xrdua' to start it."
+		echo ""
+	fi
+fi
